@@ -11,7 +11,19 @@ const _sharedMatrix: Float32Array = new Float32Array([
   0.0, 0.0, 0.0, 0.0, //
   0.0, 0.0, 0.0, 0.0  //
 ]);
+const _translateRelateMatrix: Float32Array = new Float32Array([
+  1.0, 0.0, 0.0, 0.0,//
+  0.0, 1.0, 0.0, 0.0,//
+  0.0, 0.0, 1.0, 0.0,//
+  0.0, 0.0, 0.0, 1.0 //
+]);
 
+const _scaleRelateMatrix: Float32Array = new Float32Array([
+  1.0, 0.0, 0.0, 0.0,//
+  0.0, 1.0, 0.0, 0.0,//
+  0.0, 0.0, 1.0, 0.0,//
+  0.0, 0.0, 0.0, 1.0 //
+]);
 const _sharedIdentityMatrix: Float32Array = new Float32Array([
   1.0, 0.0, 0.0, 0.0, //
   0.0, 1.0, 0.0, 0.0, //
@@ -59,17 +71,29 @@ export class CubismMatrix44 {
     const c = _sharedMatrix;
     const n = 4;
 
+    // for (let i = 0; i < n; ++i) {
+    //   for (let j = 0; j < n; ++j) {
+    //     for (let k = 0; k < n; ++k) {
+    //       c[j + i * 4] += a[k + i * 4] * b[j + k * 4];
+    //     }
+    //   }
+    // }
+
     for (let i = 0; i < n; ++i) {
-      for (let j = 0; j < n; ++j) {
-        for (let k = 0; k < n; ++k) {
-          c[j + i * 4] += a[k + i * 4] * b[j + k * 4];
+      for (let k = 0; k < n; ++k) {
+        const x = a[k + i * 4];
+        if (x == 0) continue;
+        for (let j = 0; j < n; ++j) {
+          const y = b[j + k * 4];
+          if (y == 0) continue;
+          c[j + i * 4] += x * y;
         }
       }
     }
-
-    for (let i = 0; i < 16; ++i) {
-      dst[i] = c[i];
-    }
+    // for (let i = 0; i < 16; ++i) {
+    //   dst[i] = c[i];
+    // }
+    dst.set(c);
   }
 
   /**
@@ -183,24 +207,15 @@ export class CubismMatrix44 {
    * @param y Y軸の移動量
    */
   public translateRelative(x: number, y: number): void {
-    const tr1: Float32Array = new Float32Array([
-      1.0,
-      0.0,
-      0.0,
-      0.0,
-      0.0,
-      1.0,
-      0.0,
-      0.0,
-      0.0,
-      0.0,
-      1.0,
-      0.0,
-      x,
-      y,
-      0.0,
-      1.0
-    ]);
+    // const tr1: Float32Array = new Float32Array([
+    //   1.0, 0.0, 0.0, 0.0,// 0,1,2,3
+    //   0.0, 1.0, 0.0, 0.0,// 4,5,6,7
+    //   0.0, 0.0, 1.0, 0.0,// 8,9,10,11
+    //   x, y, 0.0, 1.0 // 12,13,14,15
+    // ]);
+    _translateRelateMatrix[12] = x;
+    _translateRelateMatrix[13] = y;
+    const tr1 = _translateRelateMatrix;
 
     CubismMatrix44.multiply(tr1, this._tr, this._tr);
   }
@@ -243,25 +258,15 @@ export class CubismMatrix44 {
    * @param y Y軸の拡大率
    */
   public scaleRelative(x: number, y: number): void {
-    const tr1: Float32Array = new Float32Array([
-      x,
-      0.0,
-      0.0,
-      0.0,
-      0.0,
-      y,
-      0.0,
-      0.0,
-      0.0,
-      0.0,
-      1.0,
-      0.0,
-      0.0,
-      0.0,
-      0.0,
-      1.0
-    ]);
-
+    // const tr1: Float32Array = new Float32Array([
+    //   x, 0.0, 0.0, 0.0, //   0,1,2,3
+    //   0.0, y, 0.0, 0.0, //   4,5,6,7
+    //   0.0, 0.0, 1.0, 0.0,//
+    //   0.0, 0.0, 0.0, 1.0 //
+    // ]);
+    _scaleRelateMatrix[0] = x;
+    _scaleRelateMatrix[5] = y;
+    const tr1 = _scaleRelateMatrix;
     CubismMatrix44.multiply(tr1, this._tr, this._tr);
   }
 
@@ -291,7 +296,7 @@ export class CubismMatrix44 {
    * オブジェクトのコピーを生成する
    */
   public clone(): CubismMatrix44 {
-    const cloneMatrix: CubismMatrix44 = new CubismMatrix44(this._tr,false);
+    const cloneMatrix: CubismMatrix44 = new CubismMatrix44(this._tr, false);
 
     // for (let i = 0; i < this._tr.length; i++) {
     //   cloneMatrix._tr[i] = this._tr[i];
