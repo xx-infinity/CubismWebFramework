@@ -5,6 +5,19 @@
  * that can be found at https://www.live2d.com/eula/live2d-open-software-license-agreement_en.html.
  */
 
+const _sharedMatrix: Float32Array = new Float32Array([
+  0.0, 0.0, 0.0, 0.0, //
+  0.0, 0.0, 0.0, 0.0, //
+  0.0, 0.0, 0.0, 0.0, //
+  0.0, 0.0, 0.0, 0.0  //
+]);
+
+const _sharedIdentityMatrix: Float32Array = new Float32Array([
+  1.0, 0.0, 0.0, 0.0, //
+  0.0, 1.0, 0.0, 0.0, //
+  0.0, 0.0, 1.0, 0.0, //
+  0.0, 0.0, 0.0, 1.0 //
+]);
 /**
  * 4x4の行列
  *
@@ -14,9 +27,13 @@ export class CubismMatrix44 {
   /**
    * コンストラクタ
    */
-  public constructor() {
-    this._tr = new Float32Array(16); // 4 * 4のサイズ
-    this.loadIdentity();
+  public constructor(tr: Float32Array = new Float32Array(16), loadIdentity: boolean = true) {
+
+    this._tr = tr; // 4 * 4のサイズ
+    if (loadIdentity) {
+      this.loadIdentity();
+    }
+
   }
 
   /**
@@ -31,11 +48,15 @@ export class CubismMatrix44 {
     b: Float32Array,
     dst: Float32Array
   ): void {
-    const c: Float32Array = new Float32Array([
-      0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
-      0.0
-    ]);
+    // const c: Float32Array = new Float32Array([
+    //   0.0, 0.0, 0.0, 0.0,  //
+    //   0.0, 0.0, 0.0, 0.0, //
+    //   0.0, 0.0, 0.0, 0.0, //
+    //   0.0, 0.0, 0.0, 0.0 //
+    // ]);
 
+    _sharedMatrix.fill(0.0);
+    const c = _sharedMatrix;
     const n = 4;
 
     for (let i = 0; i < n; ++i) {
@@ -55,12 +76,14 @@ export class CubismMatrix44 {
    * 単位行列に初期化する
    */
   public loadIdentity(): void {
-    const c: Float32Array = new Float32Array([
-      1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0,
-      1.0
-    ]);
+    // const c: Float32Array = new Float32Array([
+    //   1.0, 0.0, 0.0, 0.0, //
+    //   0.0, 1.0, 0.0, 0.0, //
+    //   0.0, 0.0, 1.0, 0.0, //
+    //   0.0, 0.0, 0.0, 1.0  //
+    // ]);
 
-    this.setMatrix(c);
+    this.setMatrix(_sharedIdentityMatrix);
   }
 
   /**
@@ -69,9 +92,10 @@ export class CubismMatrix44 {
    * @param tr 16個の浮動小数点数で表される4x4の行列
    */
   public setMatrix(tr: Float32Array): void {
-    for (let i = 0; i < 16; ++i) {
-      this._tr[i] = tr[i];
-    }
+    // for (let i = 0; i < 16; ++i) {
+    //   this._tr[i] = tr[i];
+    // }
+    this._tr.set(tr);
   }
 
   /**
@@ -267,12 +291,11 @@ export class CubismMatrix44 {
    * オブジェクトのコピーを生成する
    */
   public clone(): CubismMatrix44 {
-    const cloneMatrix: CubismMatrix44 = new CubismMatrix44();
+    const cloneMatrix: CubismMatrix44 = new CubismMatrix44(this._tr,false);
 
-    for (let i = 0; i < this._tr.length; i++) {
-      cloneMatrix._tr[i] = this._tr[i];
-    }
-
+    // for (let i = 0; i < this._tr.length; i++) {
+    //   cloneMatrix._tr[i] = this._tr[i];
+    // }
     return cloneMatrix;
   }
 

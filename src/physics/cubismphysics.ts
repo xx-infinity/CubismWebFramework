@@ -399,14 +399,7 @@ export class CubismPhysics {
         const destinationParameterIndex: number =
           currentOutputs[i].destinationParameterIndex;
 
-        const outParameterCaches: Float32Array =
-          !Float32Array.prototype.slice && 'subarray' in Float32Array.prototype
-            ? JSON.parse(
-                JSON.stringify(
-                  parameterValues.subarray(destinationParameterIndex)
-                )
-              ) // 値渡しするため、JSON.parse, JSON.stringify
-            : parameterValues.slice(destinationParameterIndex);
+        const outParameterCaches: Float32Array = parameterValues.slice(destinationParameterIndex);
 
         updateOutputParameterValue(
           outParameterCaches,
@@ -650,14 +643,7 @@ export class CubismPhysics {
           const destinationParameterIndex: number =
             currentOutputs[i].destinationParameterIndex;
           const outParameterCaches: Float32Array =
-            !Float32Array.prototype.slice &&
-            'subarray' in Float32Array.prototype
-              ? JSON.parse(
-                  JSON.stringify(
-                    this._parameterCaches.subarray(destinationParameterIndex)
-                  )
-                ) // 値渡しするため、JSON.parse, JSON.stringify
-              : this._parameterCaches.slice(destinationParameterIndex);
+            this._parameterCaches.slice(destinationParameterIndex);
 
           updateOutputParameterValue(
             outParameterCaches,
@@ -717,14 +703,7 @@ export class CubismPhysics {
 
         const destinationParameterIndex: number =
           currentOutputs[i].destinationParameterIndex;
-        const outParameterValues: Float32Array =
-          !Float32Array.prototype.slice && 'subarray' in Float32Array.prototype
-            ? JSON.parse(
-                JSON.stringify(
-                  parameterValues.subarray(destinationParameterIndex)
-                )
-              ) // 値渡しするため、JSON.parse, JSON.stringify
-            : parameterValues.slice(destinationParameterIndex);
+        const outParameterValues: Float32Array = parameterValues.slice(destinationParameterIndex);
 
         updateOutputParameterValue(
           outParameterValues,

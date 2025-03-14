@@ -47,11 +47,11 @@ export abstract class CubismRenderer {
   public drawModel(): void {
     if (this.getModel() == null) return;
 
-    this.saveProfile();
+    // this.saveProfile();
 
     this.doDrawModel();
 
-    this.restoreProfile();
+    // this.restoreProfile();
   }
 
   /**
